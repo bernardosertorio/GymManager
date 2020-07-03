@@ -1,7 +1,7 @@
 const express = require('express')
 const routes = express.Router()
-const instructors = require('./app/controlers/instructors')
-const members = require('./app/controlers/members')
+const instructors = require('./app/controllers/instructors')
+const members = require('./app/controllers/members')
 
 
 

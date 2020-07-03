@@ -1,162 +1,102 @@
-const fs = require('fs') //fs = file system 
-const data = require('../data.json')
-const { age, date } = require('../utils')
+const Instructor = require('../models/Instructor')
+const { age, date } = require('../../lib/utils')
 
 
+module.exports = {
+  
+  index(req, res) {
 
+    Instructor.all(function(instructors) {
+      return res.render("instructors/index", { instructors })
+    })
+   
+  },
+  
+  show(req, res) {
 
-//index - Listagem de instrutores
+    Instructor.find(req.params.id, function(instructor) {
 
-exports.index = function(req, res) {
-  return res.render("instructors/index", { instructors: data.instructors })
-}
+      if (!instructor) return res.send("Instructor not found!")
 
+      instructor.age = age(instructor.birth)
+      instructor.services = instructor.services.split(",")
+      instructor.created_at = date(instructor.created_at).format 
 
-// Apresentar dados dos instrutores em tela. -- Show
+      return res.render("instructors/show", { instructor })
 
-exports.show = function(req, res) {
-  const { id } = req.params // desestruturação dos paramentros dos instrutores. Retirando só o id.
+    })
 
-  const foundInstructor = data.instructors.find(function(instructor){
-    return instructor.id == id
-  })
+  },
+  
+  create(req, res) {
 
-  if (!foundInstructor) return res.send('Instructor not found!')
+    return res.render('instructors/create')
 
+  },
+  
+  post(req, res) {
 
-  // organizando os dados para apresentação na página show.
-  const instructor = { 
-    ...foundInstructor,
-    age: age(foundInstructor.birth),
-    services: foundInstructor.services.split(","), //Transformando strings do banco de dados em arrays
-    created_at: new Intl.DateTimeFormat("pt-BR").format(foundInstructor.created_at), // formatação para "desde" 
-  }
+    const keys = Object.keys(req.body)              
 
-  return res.render('instructors/show', {instructor})
-}
+    for(key of keys) {
+      if (req.body[key] == "") {
 
+        return res.send("Fill in all fields!")
 
-// Create
-
-exports.create = function(req, res) {
-  return res.render('instructors/create')
-}
-
-
-// Post 
-
-exports.post = function(req, res) { // estrutura de validação no back end antes de mandar para o banco de dados
-  const keys = Object.keys(req.body)             // recebendo dados do front end com o req.body 
-
-  for(key of keys) {
-    if (req.body[key] == "") {
-
-      return res.send("Preencha todos os campos!")
-
+      }
     }
-  }
+     
+    Instructor.create(req.body, function(instructor) {
 
-  let { avatar_url, birth, name, services, gender } = req.body //organização dos dados que quero enviar.
+      return res.redirect(`/instructors/${instructor.id}`)
+
+    })
+
+
+  },
+  
+  edit(req, res) {
+
+    Instructor.find(req.params.id, function(instructor) {
+
+      if (!instructor) return res.send("Instructor not found!")
+
+      instructor.birth = date(instructor.birth).iso 
+
+      return res.render("instructors/edit", { instructor })
+
+    })
 
   
-  birth = Date.parse(birth) //  Tratamento e estruturando dados de instrutores
-  const created_at = Date.now()
-  const id = Number(data.instructors.length + 1)
-
-
-  data.instructors.push({ //Dados que estou enviando
-    id,
-    avatar_url,
-    name,
-    birth,
-    gender,
-    services,
-    created_at,
-  })
-
-
-  // configuração banco de dados
-
-  fs.writeFile("data.json", JSON.stringify(data, null, 2), function(err){ //amarzenando dados em arquivo local Json 
-    if (err) return res.send("Write file error!")
-
-    return res.redirect("/instructors")
-  })
-}
-
-
-//edit
-
-exports.edit = function(req, res) {
+  },
   
-  const { id } = req.params // achando os dados do instrutor para edição
+  put(req, res) {
 
-  const foundInstructor = data.instructors.find(function(instructor){
-    return instructor.id == id 
-  })
+    const keys = Object.keys(req.body)             // recebendo dados do front end com o req.body 
 
-  if (!foundInstructor) return res.send('Instructor not found!')
+    for(key of keys) {
+      if (req.body[key] == "") {
 
-  const instructor = {
-    ...foundInstructor,
-    birth: date(foundInstructor.birth).iso
-  }
+        return res.send("Fill in all fields!")
 
-  return res.render('instructors/edit', { instructor })
-
-}
-
-
-// put - atualização de algum dado editado no instructor
-
-exports.put = function(req, res) {
-
-  const { id } = req.body
-  let index = 0
-
-  const foundInstructor = data.instructors.find(function(instructor, foundIndex) { // vai econtrar o instrutor e a posição do instrutor dentro do data
-
-    if (instructor.id = id) {
-      index = foundIndex
-      return true
+      }
     }
-  })
 
-  if (!foundInstructor) return res.send("Instructor not found!")
+    Instructor.update(req.body, function() {
 
-  const instructor = { // comparação entre os dados existentes no data e os modificados no corpo da requisição
-    ...foundInstructor,
-    ...req.body,
-    birth: Date.parse(req.body.birth),
-    id: Number(req.body.id)
+      return res.redirect(`/instructors/${req.body.id}`)
+    })
+
+  },
+  
+  delete(req, res) {
+
+    Instructor.delete(req.body.id, function() {
+
+      return res.redirect("/instructors")
+    })
+
   }
-
-  data.instructors[index] = instructor // vai atualizar o banco de dados na posição que ele foi encontrado com os dados do instructor atualizado.
-
-  fs.writeFile("data.json", JSON.stringify(data, null, 2), function(err) {
-    if(err) return res.send("Write error!")
-
-    return res.redirect(`/instructors/${id}`)
-  })
-
 }
 
-
-// Delete
-
-exports.delete = function(req, res) {
-  const {id} = req.body
-
-  const filteredInstructors = data.instructors.filter(function(instructor){
-    return instructor.id != id
-  })
-
-  data.instructors = filteredInstructors
-
-  fs.writeFile("data.json", JSON.stringify(data, null, 2), function(err){
-    if (err) return res.send("Write file error!")
-    
-    return res.redirect("/instructors")
-  })
-}
 

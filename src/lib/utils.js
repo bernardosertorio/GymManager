@@ -1,6 +1,6 @@
 module.exports = { // transformando a data de aniversário que está em timestamp para o formato convencional
 
-  age: function(timestamp) { 
+  age(timestamp) { 
     const today = new Date()
     const birthDate = new Date(timestamp)
 
@@ -18,7 +18,7 @@ module.exports = { // transformando a data de aniversário que está em timestam
     return age
   },
 
-  date: function(timestamp) { // formatando datas de acordo com o HTML
+  date(timestamp) { // formatando datas de acordo com o HTML
     const date = new Date(timestamp)
 
     const year = date.getUTCFullYear()
@@ -30,7 +30,8 @@ module.exports = { // transformando a data de aniversário que está em timestam
       month,
       year,
       iso: `${year}-${month}-${day}`, // retorno do tipo iso
-      birthDay: `${day}/${month}`
+      birthDay: `${day}/${month}`,
+      format: `${day}/${month}/${year}`
     }
   }
 }
