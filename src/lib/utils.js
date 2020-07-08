@@ -23,13 +23,13 @@ module.exports = { // transformando a data de aniversário que está em timestam
 
     const year = date.getUTCFullYear()
     const month = `0${date.getUTCMonth() + 1}`.slice(-2)
-    const day = `0${date.getUTCDay()}`.slice(-2) 
+    const day = `0${date.getUTCDay() + 1}`.slice(-2) 
 
     return {
       day,
       month,
       year,
-      iso: `${year}-${month}-${day}`, // retorno do tipo iso
+      iso: `${year}-${month}-${day}`, 
       birthDay: `${day}/${month}`,
       format: `${day}/${month}/${year}`
     }
