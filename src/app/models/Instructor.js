@@ -76,7 +76,7 @@ module.exports = {
     const values = [
       data.avatar_url,
       data.name,
-      date(data.birth).age,
+      date(data.birth).iso,
       data.gender,
       data.services,
       data.id

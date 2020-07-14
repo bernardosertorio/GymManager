@@ -8,10 +8,7 @@ module.exports = { // transformando a data de aniversário que está em timestam
     let age = today.getFullYear() - birthDate.getFullYear()
     const month = today.getMonth() - birthDate.getMonth()
 
-    today.getDate()
-    birthDate.getDate()
-
-    if (month < 0 || month == 0 && today.getDate() < birthDate.getDate()) {
+    if (month < 0 || month == 0 && today.getDate() <= birthDate.getDate()) {
       age = age - 1
     }
 
@@ -23,7 +20,7 @@ module.exports = { // transformando a data de aniversário que está em timestam
 
     const year = date.getUTCFullYear()
     const month = `0${date.getUTCMonth() + 1}`.slice(-2)
-    const day = `0${date.getUTCDay() + 1}`.slice(-2) 
+    const day = `0${date.getUTCDate()}`.slice(-2) 
 
     return {
       day,
