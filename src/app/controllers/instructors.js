@@ -6,10 +6,32 @@ module.exports = {
   
   index(req, res) {
 
-    Instructor.all(function(instructors) {
-      return res.render("instructors/index", { instructors })
-    })
-   
+    let { filter, page, limit } = req.query
+
+    page = page || 1
+    limit = limit || 2
+    let offset = limit * (page - 1)
+
+    const params = {
+      filter,
+      page,
+      limit,
+      offset,
+      callback(instructors) {
+
+      }
+    }
+
+    Instructor.paginate(params)
+
+    //if ( filter ) {
+      //Instructor.findBy(filter, function(instructors) {
+        //return res.render("instructors/index", { instructors, filter })
+      //})
+    //} else {
+      //Instructor.all(function(instructors) {
+        //return res.render("instructors/index", { instructors })
+    //})
   },
   
   show(req, res) {

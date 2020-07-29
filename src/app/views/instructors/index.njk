@@ -4,7 +4,23 @@
 
 <div class="card table-container">
 
-  <a href="/instructors/create">Novo Instrutor</a>
+  <div class="header">
+
+   <a class="button" href="/instructors/create">Novo Instrutor</a>
+  
+    <form action="/instructors" metohd="GET">
+
+      <input
+        type="text"
+        name="filter"
+        placeholder="Nome ou Atendimento"
+        value={{filter}}
+      >
+      <button type="submit">Filtrar</button>
+
+    </form>
+  
+  </div>
 
   <table width="100%">
 
@@ -12,6 +28,7 @@
       <tr>
         <th>Instructor</th>
         <th>Services</th>
+        <th>Members<th>
         <th>Options</>
       </tr>
     </thead>
@@ -28,6 +45,7 @@
             {{instructor.name}}
         </td>
         <td>{{instructor.services}}</td>
+        <td>{{instructor.total_students}} </td>
         <td><a href="/instructors/{{instructor.id}}">Ver</a></td>
       </tr>
 
