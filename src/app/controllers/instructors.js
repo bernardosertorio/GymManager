@@ -24,14 +24,6 @@ module.exports = {
 
     Instructor.paginate(params)
 
-    //if ( filter ) {
-      //Instructor.findBy(filter, function(instructors) {
-        //return res.render("instructors/index", { instructors, filter })
-      //})
-    //} else {
-      //Instructor.all(function(instructors) {
-        //return res.render("instructors/index", { instructors })
-    //})
   },
   
   show(req, res) {
